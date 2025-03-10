@@ -1,8 +1,15 @@
 import 'package:app_dtn/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  bool _isObscured = true; // Trạng thái hiển thị mật khẩu
 
   @override
   Widget build(BuildContext context) {
@@ -33,24 +40,24 @@ class LoginPage extends StatelessWidget {
               TextField(
                 decoration: InputDecoration(
                   labelText: 'Username',
-                  border:
-                      OutlineInputBorder(), // Thêm viền xung quanh TextField
-                  errorBorder: OutlineInputBorder(
-                    // Viền khi có lỗi
-                    borderSide: BorderSide(color: Colors.red, width: 2),
-                  ),
+                  border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 10),
               TextField(
-                obscureText: true,
+                obscureText: _isObscured,
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  border:
-                      OutlineInputBorder(), // Thêm viền xung quanh TextField
-                  errorBorder: OutlineInputBorder(
-                    // Viền khi có lỗi
-                    borderSide: BorderSide(color: Colors.red, width: 2),
+                  border: OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isObscured ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                      _isObscured = !_isObscured;
+                      });
+                    },
                   ),
                 ),
               ),
@@ -71,7 +78,7 @@ class LoginPage extends StatelessWidget {
                     )),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue[900],
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   elevation: 10,
                 ),
                 child: const Text(
