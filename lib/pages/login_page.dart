@@ -1,6 +1,5 @@
 import 'package:app_dtn/pages/home_page.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -34,8 +33,10 @@ class LoginPage extends StatelessWidget {
               TextField(
                 decoration: InputDecoration(
                   labelText: 'Username',
-                  border: OutlineInputBorder(),// Thêm viền xung quanh TextField
-                  errorBorder: OutlineInputBorder( // Viền khi có lỗi
+                  border:
+                      OutlineInputBorder(), // Thêm viền xung quanh TextField
+                  errorBorder: OutlineInputBorder(
+                    // Viền khi có lỗi
                     borderSide: BorderSide(color: Colors.red, width: 2),
                   ),
                 ),
@@ -45,8 +46,10 @@ class LoginPage extends StatelessWidget {
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  border: OutlineInputBorder(),// Thêm viền xung quanh TextField
-                  errorBorder: OutlineInputBorder( // Viền khi có lỗi
+                  border:
+                      OutlineInputBorder(), // Thêm viền xung quanh TextField
+                  errorBorder: OutlineInputBorder(
+                    // Viền khi có lỗi
                     borderSide: BorderSide(color: Colors.red, width: 2),
                   ),
                 ),
@@ -62,11 +65,10 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () => Navigator.push(
-                  context, 
-                  MaterialPageRoute(
-                    builder: (context) => HomePage(),
-                  )
-                ) ,
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HomePage(),
+                    )),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue[900],
                   padding: EdgeInsets.symmetric(vertical: 12),
