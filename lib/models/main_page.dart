@@ -12,8 +12,10 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Text('Profile page'),
+    return Center(
+      child: Container(
+        child: Text('main page'),
+      ),
     );
   }
 }

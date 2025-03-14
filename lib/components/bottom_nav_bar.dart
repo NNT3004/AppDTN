@@ -21,11 +21,11 @@ class MyBottomNavBar extends StatelessWidget {
         tabs: [
           GButton(
             icon: Icons.home,
-            text: 'Home',
+            text: 'Màn hình chính',
           ),
           GButton(
             icon: Icons.account_circle_sharp,
-            text: 'Profile',
+            text: 'Thông tin cá nhân',
           ),
         ]
       )  ,
