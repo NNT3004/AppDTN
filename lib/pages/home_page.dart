@@ -1,6 +1,7 @@
 import 'package:app_dtn/components/bottom_nav_bar.dart';
 import 'package:app_dtn/models/main_page.dart';
 import 'package:app_dtn/models/profile_page.dart';
+import 'package:app_dtn/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -11,47 +12,50 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  //this selected index is to control the bottom nav bar
+  // Biến lưu trữ index của trang hiện tại để điều khiển thanh điều hướng
   int _selectedIndex = 0;
-  // this method will update our select index
-  // when the user taps on the bottom bar
+
+  // Hàm cập nhật index khi người dùng nhấn vào thanh điều hướng
   void navigateBottomBar(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
-  //pages to display
+  // Danh sách các trang để hiển thị
   final List<Widget> _pages = [
-    //main page
-    const MainPage(),
-    //profile page
-    const ProfilePage(),
+    const MainPage(), // Trang chính
+    const ProfilePage(), // Trang hồ sơ
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Colors.grey[300], // Màu nền của trang chính
+
+      // Thanh điều hướng dưới cùng
       bottomNavigationBar: MyBottomNavBar(
         onTabChange: (index) => navigateBottomBar(index),
       ),
+
+      // Thanh AppBar
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        elevation: 0,
+        elevation: 0, // Loại bỏ bóng
         leading: Builder(
-          builder:
-              (context) => IconButton(
-                icon: Padding(
-                  padding: const EdgeInsets.only(left: 12.0),
-                  child: Icon(Icons.menu, color: Colors.blue[900]),
-                ),
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-              ),
+          builder: (context) => IconButton(
+            icon: Padding(
+              padding: const EdgeInsets.only(left: 12.0),
+              child: Icon(Icons.menu, color: Colors.blue[900]),
+            ),
+            onPressed: () {
+              Scaffold.of(context).openDrawer(); // Mở menu Drawer
+            },
+          ),
         ),
       ),
+
+      // Menu Drawer (bên trái màn hình)
       drawer: Drawer(
         backgroundColor: Colors.white,
         child: Column(
@@ -59,18 +63,12 @@ class _HomePageState extends State<HomePage> {
           children: [
             Column(
               children: [
-                //logo
+                // Phần header với logo
                 DrawerHeader(
-                  child: Image.asset(
-                    'lib/images/logo.png',
-                    //color: Colors.blue[900],
-                  ),
+                  child: Image.asset('lib/images/logo.png'),
                 ),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                //   child: Divider(color: Colors.grey[800],),
-                // ),
-                // other pages
+
+                // Mục "Màn hình chính"
                 Padding(
                   padding: const EdgeInsets.only(left: 25.0),
                   child: ListTile(
@@ -81,6 +79,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
+
+                // Mục "About"
                 Padding(
                   padding: const EdgeInsets.only(left: 25.0),
                   child: ListTile(
@@ -93,6 +93,8 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
+
+            // Mục "Đăng xuất"
             Padding(
               padding: const EdgeInsets.only(left: 25.0, bottom: 25.0),
               child: ListTile(
@@ -101,15 +103,57 @@ class _HomePageState extends State<HomePage> {
                   'Đăng xuất',
                   style: TextStyle(color: Colors.blue[900]),
                 ),
+                onTap: () {
+                  _showLogoutDialog(context); // Gọi hộp thoại xác nhận đăng xuất
+                },
               ),
             ),
-          ],
+          ], 
         ),
       ),
-      body:
-          _pages.isNotEmpty && _selectedIndex < _pages.length
-              ? _pages[_selectedIndex]
-              : const Center(child: Text("Trang không tồn tại")),
+
+      // Nội dung trang hiện tại
+      body: _pages.isNotEmpty && _selectedIndex < _pages.length
+          ? _pages[_selectedIndex]
+          : const Center(child: Text("Trang không tồn tại")),
+    );
+  }
+
+  // Hộp thoại xác nhận đăng xuất
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Xác nhận đăng xuất"),
+          content: Text("Bạn có chắc chắn muốn đăng xuất không?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Đóng hộp thoại nếu chọn "Không"
+              },
+              child: Text("Không"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Đóng hộp thoại
+                _logout(); // Gọi hàm đăng xuất nếu chọn "Có"
+              },
+              child: Text("Có", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Hàm xử lý đăng xuất
+  void _logout() {
+    print("Đã đăng xuất!");
+    // Điều hướng về màn hình đăng nhập và xóa toàn bộ lịch sử điều hướng
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
     );
   }
 }
