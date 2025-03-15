@@ -70,7 +70,7 @@ class _HomePageState extends State<HomePage> {
 
                 // Mục "Màn hình chính"
                 Padding(
-                  padding: const EdgeInsets.only(left: 25.0),
+                  padding: const EdgeInsets.only(left: 25.0, right: 25.0),
                   child: ListTile(
                     leading: Icon(Icons.home, color: Colors.blue[900]),
                     title: Text(
@@ -82,7 +82,7 @@ class _HomePageState extends State<HomePage> {
 
                 // Mục "About"
                 Padding(
-                  padding: const EdgeInsets.only(left: 25.0),
+                  padding: const EdgeInsets.only(left: 25.0, right: 25.0),
                   child: ListTile(
                     leading: Icon(Icons.info, color: Colors.blue[900]),
                     title: Text(
@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage> {
 
             // Mục "Đăng xuất"
             Padding(
-              padding: const EdgeInsets.only(left: 25.0, bottom: 25.0),
+              padding: const EdgeInsets.only(left: 15.0, bottom: 25.0, right: 15.0),
               child: ListTile(
                 leading: Icon(Icons.logout, color: Colors.blue[900]),
                 title: Text(
