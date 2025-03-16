@@ -1,3 +1,7 @@
+import 'package:app_dtn/pages/eventpages/academic_events.dart';
+import 'package:app_dtn/pages/eventpages/other_events.dart';
+import 'package:app_dtn/pages/eventpages/traditional_events.dart';
+import 'package:app_dtn/pages/eventpages/union_events.dart';
 import 'package:flutter/material.dart';
 
 class EventsPage extends StatefulWidget {
@@ -37,42 +41,13 @@ class _EventsPageState extends State<EventsPage> {
         ),
         body: TabBarView(
           children: [
-            OptionScreen(title: "Truyền Thống"),
-            OptionScreen(title: "Học Thuật"),
-            OptionScreen(title: "Liên Chi Đoàn"),
-            OptionScreen(title: "Khác"),
+            TraditionalEvents(),
+            AcademicEvents(),
+            UnionEvents(),
+            OtherEvents(),
           ],
         ),
       ),
-    );
-  }
-}
-
-class OptionScreen extends StatelessWidget {
-  final String title;
-  const OptionScreen({super.key, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: 10,
-      itemBuilder: (context, index) {
-        return Card(
-          margin: const EdgeInsets.all(10),
-          child: ListTile(
-            leading: Icon(Icons.event, color: Colors.blue),
-            title: Text(
-              "$title $index",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.fsfsfsfsfsfsfs"),
-            trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey), // Mũi tên điều hướng
-            onTap: () {
-              // Xử lý khi bấm vào mục
-            },
-          ),
-        );
-      },
     );
   }
 }
