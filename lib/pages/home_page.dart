@@ -1,6 +1,7 @@
 import 'package:app_dtn/components/bottom_nav_bar.dart';
-import 'package:app_dtn/models/main_page.dart';
-import 'package:app_dtn/models/profile_page.dart';
+import 'package:app_dtn/pages/events_page.dart';
+import 'package:app_dtn/pages/main_page.dart';
+import 'package:app_dtn/pages/profile_page.dart';
 import 'package:app_dtn/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
@@ -75,19 +76,31 @@ class _HomePageState extends State<HomePage> {
                     leading: Icon(Icons.home, color: Colors.blue[900]),
                     title: Text(
                       'Màn hình chính',
-                      style: TextStyle(color: Colors.blue[900]),
+                      style: TextStyle(color: Colors.blue[900],fontWeight: FontWeight.bold),
+                    ),
+                    onTap: () => Navigator.push(
+                      context, 
+                      MaterialPageRoute(
+                        builder: (context) => HomePage(),
+                      )
                     ),
                   ),
                 ),
 
-                // Mục "About"
+                // Mục hoạt động
                 Padding(
                   padding: const EdgeInsets.only(left: 25.0, right: 25.0),
                   child: ListTile(
-                    leading: Icon(Icons.info, color: Colors.blue[900]),
+                    leading: Icon(Icons.event, color: Colors.blue[900],),
                     title: Text(
-                      'About',
-                      style: TextStyle(color: Colors.blue[900]),
+                      'Hoạt động',
+                      style: TextStyle(color: Colors.blue[900],fontWeight: FontWeight.bold),
+                    ),
+                    onTap: () => Navigator.push(
+                      context, 
+                      MaterialPageRoute(
+                        builder: (context) => EventsPage(),
+                      )
                     ),
                   ),
                 ),
