@@ -25,8 +25,8 @@ class _HomePageState extends State<HomePage> {
 
   // Danh sách các trang để hiển thị
   final List<Widget> _pages = [
-    const MainPage(), // Trang chính
-    const ProfilePage(), // Trang hồ sơ
+    MainPage(), // Trang chính
+    ProfilePage(), // Trang hồ sơ
   ];
 
   @override

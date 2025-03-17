@@ -1,5 +1,4 @@
 import 'package:app_dtn/pages/eventpages/academic_events.dart';
-import 'package:app_dtn/pages/eventpages/other_events.dart';
 import 'package:app_dtn/pages/eventpages/traditional_events.dart';
 import 'package:app_dtn/pages/eventpages/union_events.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,7 @@ class _EventsPageState extends State<EventsPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4, // 4 options
+      length: 3, // 4 options
       child: Scaffold(
         backgroundColor: Colors.grey[300],
         appBar: AppBar(
@@ -35,7 +34,7 @@ class _EventsPageState extends State<EventsPage> {
               Tab(text: "Truyền Thống"),
               Tab(text: "Học Thuật"),
               Tab(text: "Liên Chi Đoàn"),
-              Tab(text: "Khác"), // Chỉ thấy khi vuốt
+              //Tab(text: "Nộp Minh Chứng"), // Chỉ thấy khi vuốt
             ],
           ),
         ),
@@ -44,7 +43,6 @@ class _EventsPageState extends State<EventsPage> {
             TraditionalEvents(),
             AcademicEvents(),
             UnionEvents(),
-            OtherEvents(),
           ],
         ),
       ),
