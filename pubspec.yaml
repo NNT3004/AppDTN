@@ -38,7 +38,8 @@ dependencies:
   google_nav_bar : ^5.0.6
   flutter_slidable: ^4.0.0
   provider:
-
+  http: ^1.1.0  # Để gọi API HTTP
+  shared_preferences: ^2.2.2  # Để lưu token
 dev_dependencies:
   flutter_test:
     sdk: flutter
