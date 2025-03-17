@@ -11,7 +11,7 @@ class _AcademicEventsState extends State<AcademicEvents> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: 10,
+      itemCount: 3,
       itemBuilder: (context, index) {
         return Card(
           margin: const EdgeInsets.all(10),

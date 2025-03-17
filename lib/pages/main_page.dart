@@ -1,6 +1,7 @@
+import 'package:app_dtn/pages/eventpages/academic_events.dart';
+import 'package:app_dtn/pages/eventpages/traditional_events.dart';
+import 'package:app_dtn/pages/eventpages/union_events.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:app_dtn/components/bottom_nav_bar.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -12,9 +13,36 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        child: Text('main page'),
+    return DefaultTabController(
+      length: 3, // Số lượng tab
+      child: Scaffold(
+        backgroundColor: Colors.grey[300],
+        appBar: AppBar(
+          backgroundColor: Colors.grey[300],
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          title: Text(
+            "HOẠT ĐỘNG CỦA BẠN",
+            style: TextStyle(color: Colors.blue[900], fontWeight: FontWeight.bold),
+          ),
+          bottom: TabBar(
+            indicatorColor: Colors.blue[900],
+            labelColor: Colors.blue[900],
+            unselectedLabelColor: Colors.grey,
+            tabs: [
+              Tab(text: "Truyền Thống"),
+              Tab(text: "Học Thuật"),
+              Tab(text: "Liên Chi Đoàn"),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            TraditionalEvents(),
+            AcademicEvents(),
+            UnionEvents(),
+          ],
+        ),
       ),
     );
   }

@@ -14,7 +14,7 @@ class _EventsPageState extends State<EventsPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3, // 4 options
+      length: 3, // 3 options
       child: Scaffold(
         backgroundColor: Colors.grey[300],
         appBar: AppBar(
