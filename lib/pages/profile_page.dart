@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
+
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
@@ -14,7 +17,7 @@ class _ProfilePageState extends State<ProfilePage> {
     "studentId": "102210123",
     "email": "nguyenvana@example.com",
     "phoneNumber": "0123456789",
-    "address": "123 Đường ABC, TP.HCM"
+    "address": "123 Đường ABC, TP.HCM",
   };
 
   @override
@@ -25,11 +28,16 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: Colors.grey[300],
         centerTitle: true,
         automaticallyImplyLeading: false,
-        title: Text("Thông Tin Cá Nhân",style: TextStyle(color: Colors.blue[900], fontWeight: FontWeight.bold),),
+        title: Text(
+          "Thông Tin Cá Nhân",
+          style: TextStyle(
+            color: Colors.blue[900],
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         //backgroundColor: Colors.blue[900],
       ),
       body: Padding(
-        
         padding: EdgeInsets.all(20),
         child: Form(
           key: _formKey,
@@ -49,17 +57,25 @@ class _ProfilePageState extends State<ProfilePage> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         // Xử lý xác nhận form (Ví dụ: Gửi lên server)
-                        print("Thông tin đã được xác nhận!");
+                        if (kDebugMode) {
+                          print("Thông tin đã được xác nhận!");
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue[900],
-                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 12,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: Text("Xác nhận", style: TextStyle(fontSize: 16, color: Colors.white)),
+                    child: Text(
+                      "Xác nhận",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
                   ),
                 ),
               ],
