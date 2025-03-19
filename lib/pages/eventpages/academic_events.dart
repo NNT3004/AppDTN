@@ -1,3 +1,4 @@
+import 'package:app_dtn/pages/eventpages/eventdetail_page.dart';
 import 'package:flutter/material.dart';
 
 class AcademicEvents extends StatefulWidget {
@@ -18,14 +19,16 @@ class _AcademicEventsState extends State<AcademicEvents> {
           child: ListTile(
             leading: Icon(Icons.auto_stories, color: Colors.green),
             title: Text(
-              "Học Thuật",
+              "IAI Hackathon 2025",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            subtitle: Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.fsfsfsfsfsfsfs"),
+            subtitle: Text(" Cuộc thi lập trình “IAI HACKATHON 2024” – sân chơi hấp dẫn về công nghệ thông tin và trí tuệ nhân tạo."),
             trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey), // Mũi tên điều hướng
-            onTap: () {
-              // Xử lý khi bấm vào mục
-            },
+            onTap: 
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EventDetailPage()),
+                ),
           ),
         );
       },

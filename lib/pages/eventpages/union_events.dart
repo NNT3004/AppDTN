@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:app_dtn/pages/eventpages/eventdetail_page.dart';
 class UnionEvents extends StatefulWidget {
   const UnionEvents({super.key});
 
@@ -18,14 +18,16 @@ class _UnionEventsState extends State<UnionEvents> {
           child: ListTile(
             leading: Icon(Icons.groups, color: Colors.blue),
             title: Text(
-              "Liên chi đoàn",
+              "Hiến máu nhân đạo",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            subtitle: Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.fsfsfsfsfsfsfs"),
+            subtitle: Text("Hiến máu nhân đạo sẽ được tổ chức tại trường DUT"),
             trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey), // Mũi tên điều hướng
-            onTap: () {
-              // Xử lý khi bấm vào mục
-            },
+            onTap: 
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EventDetailPage()),
+                ),
           ),
         );
       },

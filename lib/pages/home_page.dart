@@ -4,6 +4,7 @@ import 'package:app_dtn/pages/events_page.dart';
 import 'package:app_dtn/pages/main_page.dart';
 import 'package:app_dtn/pages/profile_page.dart';
 import 'package:app_dtn/pages/login_page.dart';
+import 'package:app_dtn/pages/submitproof_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -124,6 +125,25 @@ class _HomePageState extends State<HomePage> {
                         () => Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => CommunityServicePage()),
+                        ),
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.only(left: 25.0, right: 25.0),
+                  child: ListTile(
+                    leading: Icon(Icons.upload_file, color: Colors.blue[900]),
+                    title: Text(
+                      'Nộp minh chứng',
+                      style: TextStyle(
+                        color: Colors.blue[900],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onTap:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SubmitproofPage()),
                         ),
                   ),
                 ),

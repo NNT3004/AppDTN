@@ -1,3 +1,4 @@
+import 'package:app_dtn/pages/eventpages/eventdetail_page.dart';
 import 'package:flutter/material.dart';
 
 class TraditionalEvents extends StatefulWidget {
@@ -18,14 +19,16 @@ class _TraditionalEventsState extends State<TraditionalEvents> {
           child: ListTile(
             leading: Icon(Icons.local_fire_department, color: Colors.red),
             title: Text(
-              "Truyền thống",
+              "Tình Nguyện Mùa Hè Xanh",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            subtitle: Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.fsfsfsfsfsfsfs"),
+            subtitle: Text("Chương trình tình nguyện giúp đỡ cộng đồng"),
             trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey), // Mũi tên điều hướng
-            onTap: () {
-              // Xử lý khi bấm vào mục
-            },
+            onTap: 
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EventDetailPage()),
+                ),
           ),
         );
       },
