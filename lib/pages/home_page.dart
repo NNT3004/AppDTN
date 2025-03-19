@@ -6,6 +6,8 @@ import 'package:app_dtn/pages/profile_page.dart';
 import 'package:app_dtn/pages/login_page.dart';
 import 'package:app_dtn/pages/submitproof_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:app_dtn/providers/auth_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -242,12 +244,23 @@ class _HomePageState extends State<HomePage> {
   }
 
   // Hàm xử lý đăng xuất
-  void _logout() {
-    debugPrint("Đã đăng xuất!");
+  void _logout() async {
+    debugPrint("🚪 LOGOUT: Bắt đầu quá trình đăng xuất!");
+
+    // Lấy AuthProvider để gọi hàm logout
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    // Gọi phương thức logout của AuthProvider
+    await authProvider.logout();
+
+    debugPrint("✅ LOGOUT: Đã xóa thông tin người dùng trong AuthProvider");
+
     // Điều hướng về màn hình đăng nhập và xóa toàn bộ lịch sử điều hướng
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => LoginPage()),
     );
+
+    debugPrint("🔚 LOGOUT: Đã hoàn tất quá trình đăng xuất!");
   }
 }

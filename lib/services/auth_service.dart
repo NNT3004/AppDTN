@@ -6,6 +6,7 @@ import 'package:app_dtn/services/api_service.dart';
 import 'package:app_dtn/services/token_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 
 class AuthService {
@@ -47,20 +48,20 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     final userData = jsonEncode({
       'id': user.id,
-      'fullname': user.fullname,
-      'studentId': user.studentId,
-      'email': user.email,
-      'phoneNumber': user.phoneNumber,
-      'address': user.address,
-      'username': user.username,
+      'fullname': _sanitizeString(user.fullname),
+      'studentId': _sanitizeString(user.studentId),
+      'email': _sanitizeString(user.email),
+      'phoneNumber': _sanitizeString(user.phoneNumber),
+      'address': _sanitizeString(user.address),
+      'username': _sanitizeString(user.username),
       'dateOfBirth': user.dateOfBirth?.toIso8601String(),
       'isActive': user.isActive,
-      'department': user.department,
-      'clazz': user.clazz,
+      'department': _sanitizeString(user.department),
+      'clazz': _sanitizeString(user.clazz),
     });
 
     await prefs.setString(ApiConstants.userKey, userData);
-    debugPrint('User data saved to storage');
+    debugPrint('✅ User data saved to storage with proper encoding');
   }
 
   // Lấy thông tin user đã lưu
@@ -70,9 +71,25 @@ class AuthService {
 
     if (userData != null) {
       try {
-        return User.fromJson(jsonDecode(userData));
+        debugPrint(
+          '📘 Đọc dữ liệu user từ storage: ${userData.substring(0, min(100, userData.length))}...',
+        );
+
+        // Đảm bảo xử lý UTF-8 đúng cách
+        final List<int> bytes = utf8.encode(userData);
+        final String decodedData = utf8.decode(bytes, allowMalformed: true);
+        final Map<String, dynamic> userMap = jsonDecode(decodedData);
+
+        // Kiểm tra các chuỗi tiếng Việt trước khi chuyển thành User object
+        userMap.forEach((key, value) {
+          if (value is String) {
+            userMap[key] = _sanitizeString(value);
+          }
+        });
+
+        return User.fromJson(userMap);
       } catch (e) {
-        debugPrint('Error decoding user data: $e');
+        debugPrint('❌ Error decoding user data: $e');
         return null;
       }
     }
@@ -184,13 +201,33 @@ class AuthService {
     }
   }
 
-  // Hàm xử lý chuỗi an toàn để tránh lỗi khi hiển thị
+  // Cải tiến hàm _sanitizeString để xử lý tốt hơn tiếng Việt
   String _sanitizeString(String? value) {
     if (value == null) return 'null';
+
+    // Xử lý ký tự đặc biệt và mã hóa UTF-8 đúng cách
+    try {
+      // Kiểm tra chuỗi bị mã hóa sai
+      if (value.contains('Ä') ||
+          value.contains('Æ') ||
+          value.contains('á»') ||
+          value.contains('Ã') ||
+          value.contains('Ná»')) {
+        debugPrint('🔧 Phát hiện chuỗi tiếng Việt bị mã hóa sai: "$value"');
+        // Thử decode và encode lại với UTF-8
+        List<int> bytes = utf8.encode(value);
+        String decoded = utf8.decode(bytes, allowMalformed: true);
+        debugPrint('🔧 Đã sửa thành: "$decoded"');
+        return decoded.replaceAll(RegExp(r'[\r\n]'), ' ').trim();
+      }
+    } catch (e) {
+      debugPrint('⚠️ Lỗi khi xử lý chuỗi tiếng Việt: $e');
+    }
+
     return value.replaceAll(RegExp(r'[\r\n]'), ' ').trim();
   }
 
-  // Lưu thông tin người dùng vào SharedPreferences (phương thức public)
+  // Nâng cấp phương thức lưu thông tin user
   Future<void> saveUserToStorage(User user) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -208,8 +245,13 @@ class AuthService {
         'clazz': _sanitizeString(user.clazz),
       });
 
-      await prefs.setString('user_data', userJson);
-      debugPrint('✅ User data saved to storage');
+      // Kiểm tra mã hóa trước khi lưu
+      final List<int> bytes = utf8.encode(userJson);
+      final String encodedJson = utf8.decode(bytes, allowMalformed: true);
+
+      // Sử dụng cùng key với _saveUserData
+      await prefs.setString(ApiConstants.userKey, encodedJson);
+      debugPrint('✅ User data saved to storage with enhanced UTF-8 encoding');
     } catch (e) {
       debugPrint('❌ Error saving user data: $e');
     }

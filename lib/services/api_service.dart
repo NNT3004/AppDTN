@@ -87,7 +87,9 @@ class ApiService {
     T Function(dynamic)? fromJson,
   ) {
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      final jsonData = jsonDecode(response.body);
+      // Đảm bảo xử lý UTF-8 đúng cách
+      final String responseBody = utf8.decode(response.bodyBytes);
+      final jsonData = jsonDecode(responseBody);
 
       return ApiResponse(
         success: true,
@@ -98,10 +100,12 @@ class ApiService {
     } else {
       String message;
       try {
-        final jsonData = jsonDecode(response.body);
+        // Đảm bảo xử lý UTF-8 đúng cách
+        final String responseBody = utf8.decode(response.bodyBytes);
+        final jsonData = jsonDecode(responseBody);
         message = jsonData['message'] ?? 'Lỗi không xác định';
       } catch (e) {
-        message = 'Lỗi: ${response.statusCode} - ${response.body}';
+        message = 'Lỗi: ${response.statusCode} - ${response.reasonPhrase}';
       }
 
       return ApiResponse(

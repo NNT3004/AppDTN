@@ -173,20 +173,30 @@ class _ProfilePageState extends State<ProfilePage>
         debugPrint('   - Email: ${user['email']}');
 
         setState(() {
-          // Cập nhật user map từ dữ liệu có sẵn
           user = {
-            'fullname': authProvider.user?.fullname ?? '',
+            'fullname': _fixVietnameseEncoding(
+              authProvider.user?.fullname ?? '',
+            ),
             'studentId': authProvider.user?.studentId ?? '',
             'email': authProvider.user?.email ?? '',
             'phoneNumber': authProvider.user?.phoneNumber ?? '',
-            'address': authProvider.user?.address ?? '',
+            'address': _fixVietnameseEncoding(authProvider.user?.address ?? ''),
           };
-          debugPrint('👤 USER DETAIL AFTER UPDATE:');
-          debugPrint('   - Fullname: ${user['fullname']}');
-          debugPrint('   - StudentID: ${user['studentId']}');
-          debugPrint('   - Email: ${user['email']}');
-          debugPrint('👤 Đã cập nhật thông tin user: ${json.encode(user)}');
+          debugPrint('👤 USER DETAIL AFTER FIX:');
+          user.forEach((key, value) {
+            debugPrint('   - $key: "$value"');
+          });
         });
+
+        // In chi tiết địa chỉ ở nhiều dạng để phát hiện lỗi
+        debugPrint('🔍 ADDRESS DEBUG:');
+        debugPrint('   - Raw: "${authProvider.user?.address}"');
+        debugPrint(
+          '   - Byte length: ${utf8.encode(authProvider.user?.address ?? '').length}',
+        );
+        debugPrint(
+          '   - Characters: ${(authProvider.user?.address ?? '').split('').join('|')}',
+        );
       } else {
         // Nếu chưa có, gọi API để lấy
         debugPrint('🔄 Chưa có dữ liệu user, gọi fetchUserProfile()');
@@ -201,11 +211,15 @@ class _ProfilePageState extends State<ProfilePage>
         if (result && authProvider.user != null) {
           setState(() {
             user = {
-              'fullname': authProvider.user?.fullname ?? '',
+              'fullname': _fixVietnameseEncoding(
+                authProvider.user?.fullname ?? '',
+              ),
               'studentId': authProvider.user?.studentId ?? '',
               'email': authProvider.user?.email ?? '',
               'phoneNumber': authProvider.user?.phoneNumber ?? '',
-              'address': authProvider.user?.address ?? '',
+              'address': _fixVietnameseEncoding(
+                authProvider.user?.address ?? '',
+              ),
             };
             debugPrint(
               '👤 Đã cập nhật thông tin user sau khi fetch: ${json.encode(user)}',
@@ -254,11 +268,15 @@ class _ProfilePageState extends State<ProfilePage>
             );
             setState(() {
               user = {
-                'fullname': authProvider.user?.fullname ?? '',
+                'fullname': _fixVietnameseEncoding(
+                  authProvider.user?.fullname ?? '',
+                ),
                 'studentId': authProvider.user?.studentId ?? '',
                 'email': authProvider.user?.email ?? '',
                 'phoneNumber': authProvider.user?.phoneNumber ?? '',
-                'address': authProvider.user?.address ?? '',
+                'address': _fixVietnameseEncoding(
+                  authProvider.user?.address ?? '',
+                ),
               };
             });
           }
@@ -281,11 +299,15 @@ class _ProfilePageState extends State<ProfilePage>
         if (mounted) {
           setState(() {
             user = {
-              'fullname': authProvider.user?.fullname ?? '',
+              'fullname': _fixVietnameseEncoding(
+                authProvider.user?.fullname ?? '',
+              ),
               'studentId': authProvider.user?.studentId ?? '',
               'email': authProvider.user?.email ?? '',
               'phoneNumber': authProvider.user?.phoneNumber ?? '',
-              'address': authProvider.user?.address ?? '',
+              'address': _fixVietnameseEncoding(
+                authProvider.user?.address ?? '',
+              ),
             };
             debugPrint(
               '👤 BUILD_UPDATED: Đã cập nhật dữ liệu trong microtask: ${json.encode(user)}',
@@ -376,17 +398,41 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-  // Thay đổi cách hiển thị TextField - sử dụng controller thay vì initialValue
-  Widget _buildTextField(String label, String key) {
-    debugPrint('🔹 FIELD: Đang render field $key với giá trị "${user[key]}"');
+  // Phương thức để xử lý chuỗi Unicode tiếng Việt
+  String _fixVietnameseEncoding(String text) {
+    try {
+      // Nếu chuỗi đã bị encode sai, thử decode và encode lại
+      if (text.contains('Ä') ||
+          text.contains('Æ') ||
+          text.contains('á»') ||
+          text.contains('Ã') ||
+          text.contains('Ná»')) {
+        // Chuyển về bytes rồi decode lại với UTF-8
+        List<int> bytes = utf8.encode(text);
+        String decoded = utf8.decode(bytes, allowMalformed: true);
+        debugPrint('🔧 FIXED STRING: "$text" -> "$decoded"');
+        return decoded;
+      }
 
-    // Tạo controller mới với giá trị ban đầu từ user map
-    final controller = TextEditingController(text: user[key]);
+      return text;
+    } catch (e) {
+      debugPrint('❌ ERROR fixing Vietnamese text: $e');
+      return text; // Trả về chuỗi gốc nếu có lỗi
+    }
+  }
+
+  // Sửa phương thức xây dựng TextField
+  Widget _buildTextField(String label, String key) {
+    // Fix chuỗi tiếng Việt trong user map
+    String fixedValue = _fixVietnameseEncoding(user[key] ?? '');
+    debugPrint('🔹 FIELD: Đang render field $key với giá trị "$fixedValue"');
+
+    // Tạo controller mới với giá trị đã được sửa
+    final controller = TextEditingController(text: fixedValue);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
       child: TextFormField(
-        // Thay thế initialValue bằng controller
         controller: controller,
         enabled: isEditing,
         decoration: InputDecoration(
@@ -443,11 +489,13 @@ class _ProfilePageState extends State<ProfilePage>
       if (authProvider.user != null) {
         setState(() {
           user = {
-            'fullname': authProvider.user?.fullname ?? '',
+            'fullname': _fixVietnameseEncoding(
+              authProvider.user?.fullname ?? '',
+            ),
             'studentId': authProvider.user?.studentId ?? '',
             'email': authProvider.user?.email ?? '',
             'phoneNumber': authProvider.user?.phoneNumber ?? '',
-            'address': authProvider.user?.address ?? '',
+            'address': _fixVietnameseEncoding(authProvider.user?.address ?? ''),
           };
           debugPrint('👤 REFRESH: Đã cập nhật user data: ${json.encode(user)}');
         });
