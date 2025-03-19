@@ -14,4 +14,7 @@ class ApiConstants {
   static const String tokenKey = 'auth_token';
   static const String userKey = 'user_data';
   static const String roleKey = 'user_role';
+
+  // New constants for Events
+  static const String registrationsEndpoint = '/api/v1/registrations';
 }
