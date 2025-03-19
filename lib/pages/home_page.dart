@@ -17,11 +17,32 @@ class _HomePageState extends State<HomePage> {
   // Biến lưu trữ index của trang hiện tại để điều khiển thanh điều hướng
   int _selectedIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    debugPrint('🏠 INIT: HomePage khởi tạo');
+  }
+
+  @override
+  void dispose() {
+    debugPrint('🏠 DISPOSE: HomePage bị hủy');
+    super.dispose();
+  }
+
   // Hàm cập nhật index khi người dùng nhấn vào thanh điều hướng
   void navigateBottomBar(int index) {
+    debugPrint('🔄 NAV: Đang chuyển từ tab $_selectedIndex sang tab $index');
+
+    if (index == _selectedIndex) {
+      debugPrint('⚠️ NAV: Tab đã được chọn, không cần thay đổi');
+      return;
+    }
+
     setState(() {
       _selectedIndex = index;
     });
+
+    debugPrint('✅ NAV: Đã chuyển sang tab $index');
   }
 
   // Danh sách các trang để hiển thị
@@ -32,11 +53,17 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('🏗️ BUILD: Đang xây dựng HomePage với tab $_selectedIndex');
+
     return Scaffold(
       backgroundColor: Colors.grey[300], // Màu nền của trang chính
       // Thanh điều hướng dưới cùng
       bottomNavigationBar: MyBottomNavBar(
-        onTabChange: (index) => navigateBottomBar(index),
+        onTabChange: (index) {
+          debugPrint('👆 CLICK: Đã nhấn vào tab $index từ BottomNavBar');
+          navigateBottomBar(index);
+        },
+        currentIndex: _selectedIndex,
       ),
 
       // Thanh AppBar
@@ -160,10 +187,7 @@ class _HomePageState extends State<HomePage> {
       ),
 
       // Nội dung trang hiện tại
-      body:
-          _pages.isNotEmpty && _selectedIndex < _pages.length
-              ? _pages[_selectedIndex]
-              : const Center(child: Text("Trang không tồn tại")),
+      body: IndexedStack(index: _selectedIndex, children: _pages),
     );
   }
 

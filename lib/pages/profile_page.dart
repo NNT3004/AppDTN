@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_dtn/providers/auth_provider.dart';
-import 'dart:convert';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -15,6 +14,7 @@ class _ProfilePageState extends State<ProfilePage>
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _hasInitialized = false;
+  int _buildCount = 0;
 
   @override
   bool get wantKeepAlive => true;
@@ -22,46 +22,94 @@ class _ProfilePageState extends State<ProfilePage>
   @override
   void initState() {
     super.initState();
-    debugPrint('🚀 ProfilePage initialized');
+    debugPrint('🔵 INIT: ProfilePage được khởi tạo');
 
     // Sử dụng addPostFrameCallback để đảm bảo gọi fetch sau khi build hoàn tất
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      debugPrint('⏱️ POST_FRAME: ProfilePage sẵn sàng khởi tạo dữ liệu');
       _initializeProfilePage();
     });
   }
 
+  @override
+  void dispose() {
+    debugPrint('🔵 DISPOSE: ProfilePage bị hủy');
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    debugPrint('🔵 DEPENDENCIES: ProfilePage dependencies thay đổi');
+  }
+
+  @override
+  void activate() {
+    super.activate();
+    debugPrint('🔵 ACTIVATE: ProfilePage được kích hoạt');
+  }
+
+  @override
+  void deactivate() {
+    debugPrint('🔵 DEACTIVATE: ProfilePage bị vô hiệu hóa');
+    super.deactivate();
+  }
+
   Future<void> _initializeProfilePage() async {
-    if (_hasInitialized) return;
-
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-
-    // Đợi cho AuthProvider khởi tạo xong với số lần thử giới hạn
-    int retryCount = 0;
-    while (!authProvider.isInitialized && retryCount < 5) {
-      debugPrint('⏳ Đang đợi AuthProvider khởi tạo... (lần $retryCount)');
-      await Future.delayed(Duration(milliseconds: 200));
-      retryCount++;
-      if (!mounted) return;
-    }
-
-    if (!authProvider.isInitialized) {
-      debugPrint('⚠️ AuthProvider không khởi tạo sau nhiều lần thử');
-      _hasInitialized = true;
+    debugPrint(
+      '🔵 INITIALIZE: Bắt đầu khởi tạo ProfilePage, hasInitialized = $_hasInitialized',
+    );
+    if (_hasInitialized) {
+      debugPrint(
+        '⚠️ INITIALIZE: ProfilePage đã được khởi tạo trước đó, bỏ qua',
+      );
       return;
     }
 
-    debugPrint(
-      '🔍 AuthProvider đã khởi tạo. Trạng thái đăng nhập: ${authProvider.isAuthenticated}',
-    );
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      debugPrint(
+        '🔵 PROVIDER: Lấy AuthProvider, isInitialized = ${authProvider.isInitialized}',
+      );
 
-    if (authProvider.isAuthenticated) {
-      debugPrint('✅ Người dùng đã đăng nhập. Đang tải thông tin...');
-      await _fetchUserProfile();
-    } else {
-      debugPrint('⚠️ Người dùng chưa đăng nhập.');
+      // Đợi cho AuthProvider khởi tạo xong với số lần thử giới hạn
+      int retryCount = 0;
+      while (!authProvider.isInitialized && retryCount < 5) {
+        debugPrint(
+          '⏳ WAIT: Đang đợi AuthProvider khởi tạo... (lần $retryCount)',
+        );
+        await Future.delayed(Duration(milliseconds: 200));
+        retryCount++;
+        if (!mounted) {
+          debugPrint(
+            '⚠️ NOT_MOUNTED: ProfilePage không còn mounted khi đợi AuthProvider',
+          );
+          return;
+        }
+      }
+
+      if (!authProvider.isInitialized) {
+        debugPrint('⚠️ TIMEOUT: AuthProvider không khởi tạo sau nhiều lần thử');
+        _hasInitialized = true;
+        return;
+      }
+
+      debugPrint(
+        '🔍 AUTH_STATE: AuthProvider đã khởi tạo. Đăng nhập = ${authProvider.isAuthenticated}',
+      );
+
+      if (authProvider.isAuthenticated) {
+        debugPrint('✅ AUTH_OK: Người dùng đã đăng nhập. Đang tải thông tin...');
+        await _fetchUserProfile();
+      } else {
+        debugPrint('⚠️ AUTH_NO: Người dùng chưa đăng nhập.');
+      }
+    } catch (e) {
+      debugPrint('❌ INIT_ERROR: Lỗi khi khởi tạo ProfilePage: $e');
+    } finally {
+      _hasInitialized = true;
+      debugPrint('✅ INIT_DONE: ProfilePage đã hoàn tất khởi tạo');
     }
-
-    _hasInitialized = true;
   }
 
   Future<void> _fetchUserProfile() async {
@@ -74,52 +122,33 @@ class _ProfilePageState extends State<ProfilePage>
       _isLoading = true;
     });
 
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final result = await authProvider.fetchUserProfile();
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      // Sử dụng phương thức mới không làm thay đổi isLoading chung
+      final result = await authProvider.fetchUserProfile();
 
-    debugPrint('✅ Fetch user profile completed with result: $result');
+      debugPrint('✅ Fetch user profile completed with result: $result');
 
-    // Kiểm tra mounted lần nữa trước khi cập nhật state và sử dụng context
-    if (!mounted) return;
+      // Kiểm tra mounted lần nữa
+      if (!mounted) return;
 
-    // In thông tin user sau khi fetch xong
-    final user = authProvider.user;
-    if (user != null) {
-      debugPrint('👤 USER DATA IN PROFILE PAGE:');
-      debugPrint('   - ID: ${user.id}');
-      debugPrint('   - Fullname: ${user.fullname}');
-      debugPrint('   - Student ID: ${user.studentId}');
-      debugPrint('   - Email: ${user.email}');
-
-      // In toàn bộ thông tin để kiểm tra
-      final userMap = {
-        'id': user.id,
-        'fullname': user.fullname,
-        'studentId': user.studentId,
-        'email': user.email,
-        'phoneNumber': user.phoneNumber,
-        'address': user.address,
-        'username': user.username,
-        'dateOfBirth': user.dateOfBirth?.toIso8601String(),
-        'isActive': user.isActive,
-        'department': user.department,
-        'clazz': user.clazz,
-      };
-      debugPrint(
-        '📊 COMPLETE USER DATA IN PROFILE PAGE: ${jsonEncode(userMap)}',
-      );
-    } else {
-      debugPrint('❌ User is null in ProfilePage after fetching');
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      debugPrint('❌ Lỗi khi tải thông tin người dùng: $e');
+      setState(() {
+        _isLoading = false;
+      });
     }
-
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('🏗️ Building ProfilePage UI');
+    super.build(context); // Quan trọng cho AutomaticKeepAliveClientMixin
+    _buildCount++;
+    debugPrint('🏗️ BUILD: ProfilePage được xây dựng lần thứ $_buildCount');
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(

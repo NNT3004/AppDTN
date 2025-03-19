@@ -189,4 +189,29 @@ class AuthService {
     if (value == null) return 'null';
     return value.replaceAll(RegExp(r'[\r\n]'), ' ').trim();
   }
+
+  // Lưu thông tin người dùng vào SharedPreferences (phương thức public)
+  Future<void> saveUserToStorage(User user) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userJson = jsonEncode({
+        'id': user.id,
+        'fullname': _sanitizeString(user.fullname),
+        'studentId': _sanitizeString(user.studentId),
+        'email': _sanitizeString(user.email),
+        'phoneNumber': _sanitizeString(user.phoneNumber),
+        'address': _sanitizeString(user.address),
+        'username': _sanitizeString(user.username),
+        'dateOfBirth': user.dateOfBirth?.toIso8601String(),
+        'isActive': user.isActive,
+        'department': _sanitizeString(user.department),
+        'clazz': _sanitizeString(user.clazz),
+      });
+
+      await prefs.setString('user_data', userJson);
+      debugPrint('✅ User data saved to storage');
+    } catch (e) {
+      debugPrint('❌ Error saving user data: $e');
+    }
+  }
 }

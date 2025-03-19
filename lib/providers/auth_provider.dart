@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:app_dtn/models/user.dart';
 import 'package:app_dtn/services/auth_service.dart';
-import 'dart:convert';
-import 'package:app_dtn/utils/storage_helper.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -33,9 +31,6 @@ class AuthProvider extends ChangeNotifier {
     debugPrint('🔄 Đang khởi tạo AuthProvider...');
 
     try {
-      final storageWorks = await StorageHelper.testStorage();
-      debugPrint('💾 SharedPreferences hoạt động: $storageWorks');
-
       _isAuthenticated = await _authService.isLoggedIn();
       debugPrint('🔐 Trạng thái đăng nhập: $_isAuthenticated');
 
@@ -131,9 +126,9 @@ class AuthProvider extends ChangeNotifier {
 
   // Thêm phương thức để lấy profile người dùng
   Future<bool> fetchUserProfile() async {
-    _isLoading = true;
+    // Loại bỏ biến isLocalLoading không sử dụng
     _error = null;
-    notifyListeners();
+    // Chỉ gọi notifyListeners() một lần ở cuối
     debugPrint('🔄 Fetching user profile...');
 
     try {
@@ -151,30 +146,11 @@ class AuthProvider extends ChangeNotifier {
         debugPrint('   - Email: ${_user?.email}');
         debugPrint('   - Department: ${_user?.department}');
 
-        // In toàn bộ thông tin user dưới dạng JSON để dễ kiểm tra
-        if (_user != null) {
-          final userMap = {
-            'id': _user!.id,
-            'fullname': _user!.fullname,
-            'studentId': _user!.studentId,
-            'email': _user!.email,
-            'phoneNumber': _user!.phoneNumber,
-            'address': _user!.address,
-            'username': _user!.username,
-            'dateOfBirth': _user!.dateOfBirth?.toIso8601String(),
-            'isActive': _user!.isActive,
-            'department': _user!.department,
-            'clazz': _user!.clazz,
-          };
-          debugPrint('📊 COMPLETE USER DATA: ${jsonEncode(userMap)}');
-        }
-
+        // Loại bỏ dòng lưu vào storage vì không có phương thức này
         notifyListeners();
         return true;
       } else {
         _error = response.message;
-        debugPrint('❌ Failed to fetch user profile: $_error');
-        debugPrint('❌ Status code: ${response.statusCode}');
         notifyListeners();
         return false;
       }
@@ -183,9 +159,6 @@ class AuthProvider extends ChangeNotifier {
       debugPrint('❌ Error fetching user profile: $_error');
       notifyListeners();
       return false;
-    } finally {
-      _isLoading = false;
-      notifyListeners();
     }
   }
 }

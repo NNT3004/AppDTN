@@ -6,6 +6,7 @@ import 'package:app_dtn/pages/login_page.dart';
 import 'package:app_dtn/providers/event_provider.dart';
 
 void main() {
+  debugPrint('🚀 APP: Khởi động ứng dụng');
   runApp(
     MultiProvider(
       providers: [
@@ -22,26 +23,30 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        // Thêm các provider khác nếu cần
-      ],
-      child: Consumer<AuthProvider>(
-        builder: (context, authProvider, _) {
+    debugPrint('🏗️ BUILD: Đang xây dựng MyApp');
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, _) {
+        debugPrint(
+          '👤 AUTH: Trạng thái đăng nhập = ${authProvider.isAuthenticated}, đang tải = ${authProvider.isLoading}',
+        );
+
+        // Chỉ kiểm tra isLoading khi app khởi động lần đầu, KHÔNG dùng cho các thao tác cập nhật
+        if (!authProvider.isInitialized) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'App DTN',
             theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
-            home:
-                authProvider.isLoading
-                    ? _buildLoadingScreen()
-                    : authProvider.isAuthenticated
-                    ? HomePage()
-                    : LoginPage(),
+            home: _buildLoadingScreen(),
           );
-        },
-      ),
+        }
+
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'App DTN',
+          theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
+          home: authProvider.isAuthenticated ? HomePage() : LoginPage(),
+        );
+      },
     );
   }
 
