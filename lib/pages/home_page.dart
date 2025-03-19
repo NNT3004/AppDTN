@@ -31,19 +31,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   // Hàm cập nhật index khi người dùng nhấn vào thanh điều hướng
-  void navigateBottomBar(int index) {
-    debugPrint('🔄 NAV: Đang chuyển từ tab $_selectedIndex sang tab $index');
+  void _onTabChange(int index) {
+    debugPrint('👆 NAV_BAR: onTabChange gọi với giá trị $index');
+    debugPrint('👆 CLICK: Đã nhấn vào tab $index từ BottomNavBar');
 
-    if (index == _selectedIndex) {
-      debugPrint('⚠️ NAV: Tab đã được chọn, không cần thay đổi');
-      return;
+    if (_selectedIndex != index) {
+      debugPrint('🔄 NAV: Đang chuyển từ tab $_selectedIndex sang tab $index');
+      setState(() {
+        _selectedIndex = index;
+      });
+      debugPrint('✅ NAV: Đã chuyển sang tab $index');
+
+      // Không sử dụng PageController vì không được định nghĩa trong class này
+      debugPrint('📱 PAGE: Chuyển sang hiển thị trang index=$index');
+    } else {
+      debugPrint('⏺️ NAV: Đã ở tab $index, không cần chuyển tab');
     }
-
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    debugPrint('✅ NAV: Đã chuyển sang tab $index');
   }
 
   // Danh sách các trang để hiển thị
@@ -60,10 +63,7 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.white, // Màu nền của trang chính
       // Thanh điều hướng dưới cùng
       bottomNavigationBar: MyBottomNavBar(
-        onTabChange: (index) {
-          debugPrint('👆 CLICK: Đã nhấn vào tab $index từ BottomNavBar');
-          navigateBottomBar(index);
-        },
+        onTabChange: _onTabChange,
         currentIndex: _selectedIndex,
       ),
 
@@ -161,7 +161,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
 
-
                 Padding(
                   padding: const EdgeInsets.only(left: 25.0, right: 25.0),
                   child: ListTile(
@@ -176,7 +175,9 @@ class _HomePageState extends State<HomePage> {
                     onTap:
                         () => Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => SubmitproofPage()),
+                          MaterialPageRoute(
+                            builder: (context) => SubmitproofPage(),
+                          ),
                         ),
                   ),
                 ),
