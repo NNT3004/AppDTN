@@ -1,6 +1,8 @@
+import 'package:app_dtn/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_dtn/pages/login_page.dart';
+import 'package:app_dtn/pages/main_page.dart';
 import 'package:app_dtn/providers/auth_provider.dart';
 
 void main() {
