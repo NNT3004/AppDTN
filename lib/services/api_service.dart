@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:app_dtn/utils/constants.dart';
 import 'package:app_dtn/services/token_service.dart';
 import 'package:app_dtn/models/api_response.dart';
+import 'package:flutter/foundation.dart';
 
 class ApiService {
   final String baseUrl = ApiConstants.baseUrl;
@@ -62,6 +63,7 @@ class ApiService {
     try {
       final headers = await _getHeaders(requiresAuth: requiresAuth);
       final uri = Uri.parse('$baseUrl$endpoint');
+      debugPrint('Fetching URL: $uri');
 
       final response = await http.post(
         uri,

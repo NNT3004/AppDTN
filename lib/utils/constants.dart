@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String baseUrl = 'http://servicescore-backend-1.onrender.com';
+  static const String baseUrl = 'https://servicescore-backend-1.onrender.com';
 
   // Auth endpoints
   static const String loginEndpoint = '/api/v1/users/login';

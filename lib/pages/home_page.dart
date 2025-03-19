@@ -1,4 +1,5 @@
 import 'package:app_dtn/components/bottom_nav_bar.dart';
+import 'package:app_dtn/pages/communityservice_page.dart';
 import 'package:app_dtn/pages/events_page.dart';
 import 'package:app_dtn/pages/main_page.dart';
 import 'package:app_dtn/pages/profile_page.dart';
@@ -106,6 +107,27 @@ class _HomePageState extends State<HomePage> {
                         ),
                   ),
                 ),
+
+                // Mục phục vụ cộng đồng      
+                Padding(
+                  padding: const EdgeInsets.only(left: 25.0, right: 25.0),
+                  child: ListTile(
+                    leading: Icon(Icons.volunteer_activism, color: Colors.blue[900]),
+                    title: Text(
+                      'Phục vụ cộng đồng',
+                      style: TextStyle(
+                        color: Colors.blue[900],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onTap:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => CommunityServicePage()),
+                        ),
+                  ),
+                ),
+
               ],
             ),
 

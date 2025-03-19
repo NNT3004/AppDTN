@@ -25,14 +25,18 @@ class AuthProvider extends ChangeNotifier {
   Future<void> _initialize() async {
     _isLoading = true;
     notifyListeners();
+    debugPrint('Initializing AuthProvider...');
 
     _isAuthenticated = await _authService.isLoggedIn();
+    debugPrint('Is authenticated: $_isAuthenticated');
 
     if (_isAuthenticated) {
       _user = await _authService.getUserFromStorage();
+      debugPrint('User loaded from storage: $_user');
 
       if (_user == null) {
         _isAuthenticated = false;
+        debugPrint('User is null, setting isAuthenticated to false');
       }
     }
 
@@ -45,9 +49,11 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = true;
     _error = null;
     notifyListeners();
+    debugPrint('Attempting login with username: $username');
 
     try {
       final response = await _authService.login(username, password);
+      debugPrint('Login response: $response');
 
       if (response.success && response.data != null) {
         _isAuthenticated = true;
@@ -64,6 +70,7 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       _error = e.toString();
       notifyListeners();
+      debugPrint('Login error: $_error');
       return false;
     } finally {
       _isLoading = false;
@@ -75,6 +82,7 @@ class AuthProvider extends ChangeNotifier {
   Future<void> logout() async {
     _isLoading = true;
     notifyListeners();
+    debugPrint('Logging out...');
 
     await _authService.logout();
 

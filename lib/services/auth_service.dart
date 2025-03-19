@@ -6,6 +6,7 @@ import 'package:app_dtn/services/api_service.dart';
 import 'package:app_dtn/services/token_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 
 class AuthService {
   final ApiService _apiService = ApiService();
@@ -21,6 +22,7 @@ class AuthService {
     String username,
     String password,
   ) async {
+    debugPrint('Sending login request for username: $username');
     final response = await _apiService.post<AuthResponse>(
       ApiConstants.loginEndpoint,
       requiresAuth: false,
@@ -28,11 +30,13 @@ class AuthService {
       fromJson: (data) => AuthResponse.fromJson(data),
     );
 
-    // Lưu token và thông tin user nếu thành công
     if (response.success && response.data != null) {
       await _tokenService.saveToken(response.data!.accessToken);
       await _tokenService.saveRole(response.data!.role);
       await _saveUserData(response.data!.user);
+      debugPrint('Login successful, token and user data saved');
+    } else {
+      debugPrint('Login failed: ${response.message}');
     }
 
     return response;
@@ -56,6 +60,7 @@ class AuthService {
     });
 
     await prefs.setString(ApiConstants.userKey, userData);
+    debugPrint('User data saved to storage');
   }
 
   // Lấy thông tin user đã lưu
@@ -67,6 +72,7 @@ class AuthService {
       try {
         return User.fromJson(jsonDecode(userData));
       } catch (e) {
+        debugPrint('Error decoding user data: $e');
         return null;
       }
     }
@@ -77,6 +83,7 @@ class AuthService {
   // Đăng xuất
   Future<void> logout() async {
     await _tokenService.clearAllData();
+    debugPrint('User logged out, all data cleared');
   }
 
   // Kiểm tra đã đăng nhập chưa

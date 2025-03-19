@@ -1,11 +1,20 @@
+import 'package:app_dtn/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_dtn/providers/auth_provider.dart';
 import 'package:app_dtn/pages/login_page.dart';
-import 'package:app_dtn/pages/home_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => AuthProvider(),
+        ), // Đăng ký AuthProvider
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -23,13 +32,11 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'App DTN',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-              useMaterial3: true,
-            ),
-            home: authProvider.isLoading
-                ? _buildLoadingScreen()
-                : authProvider.isAuthenticated
+            theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
+            home:
+                authProvider.isLoading
+                    ? _buildLoadingScreen()
+                    : authProvider.isAuthenticated
                     ? HomePage()
                     : LoginPage(),
           );
@@ -39,10 +46,6 @@ class MyApp extends StatelessWidget {
   }
 
   Widget _buildLoadingScreen() {
-    return Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
+    return Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }
