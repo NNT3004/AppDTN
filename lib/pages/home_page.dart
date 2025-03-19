@@ -108,11 +108,14 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
 
-                // Mục phục vụ cộng đồng      
+                // Mục phục vụ cộng đồng
                 Padding(
                   padding: const EdgeInsets.only(left: 25.0, right: 25.0),
                   child: ListTile(
-                    leading: Icon(Icons.volunteer_activism, color: Colors.blue[900]),
+                    leading: Icon(
+                      Icons.volunteer_activism,
+                      color: Colors.blue[900],
+                    ),
                     title: Text(
                       'Phục vụ cộng đồng',
                       style: TextStyle(
@@ -123,11 +126,12 @@ class _HomePageState extends State<HomePage> {
                     onTap:
                         () => Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => CommunityServicePage()),
+                          MaterialPageRoute(
+                            builder: (context) => CommunityServicePage(),
+                          ),
                         ),
                   ),
                 ),
-
               ],
             ),
 

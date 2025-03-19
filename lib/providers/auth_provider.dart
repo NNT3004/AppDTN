@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:app_dtn/models/user.dart';
 import 'package:app_dtn/services/auth_service.dart';
+import 'dart:convert';
+import 'package:app_dtn/utils/storage_helper.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -10,12 +12,14 @@ class AuthProvider extends ChangeNotifier {
   String? _error;
   bool _isAuthenticated = false;
   String? _role;
+  bool _isInitialized = false;
 
   User? get user => _user;
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get isAuthenticated => _isAuthenticated;
   String? get role => _role;
+  bool get isInitialized => _isInitialized;
 
   AuthProvider() {
     _initialize();
@@ -24,24 +28,55 @@ class AuthProvider extends ChangeNotifier {
   // Khởi tạo và lấy thông tin từ local storage
   Future<void> _initialize() async {
     _isLoading = true;
+    _isInitialized = false;
     notifyListeners();
-    debugPrint('Initializing AuthProvider...');
+    debugPrint('🔄 Đang khởi tạo AuthProvider...');
 
-    _isAuthenticated = await _authService.isLoggedIn();
-    debugPrint('Is authenticated: $_isAuthenticated');
+    try {
+      final storageWorks = await StorageHelper.testStorage();
+      debugPrint('💾 SharedPreferences hoạt động: $storageWorks');
 
-    if (_isAuthenticated) {
-      _user = await _authService.getUserFromStorage();
-      debugPrint('User loaded from storage: $_user');
+      _isAuthenticated = await _authService.isLoggedIn();
+      debugPrint('🔐 Trạng thái đăng nhập: $_isAuthenticated');
 
-      if (_user == null) {
-        _isAuthenticated = false;
-        debugPrint('User is null, setting isAuthenticated to false');
+      if (_isAuthenticated) {
+        _user = await _authService.getUserFromStorage();
+        debugPrint(
+          '👤 Dữ liệu người dùng từ storage: ${_user != null ? 'Có' : 'Không có'}',
+        );
+
+        if (_user == null) {
+          debugPrint(
+            '⚠️ Không tìm thấy dữ liệu người dùng trong storage. Thử lấy từ API...',
+          );
+          await fetchUserProfile().then((success) {
+            debugPrint('🔄 Kết quả lấy thông tin từ API: $success');
+          });
+        } else {
+          // Log thông tin người dùng
+          debugPrint('✅ Dữ liệu người dùng từ storage:');
+          debugPrint('   - ID: ${_user?.id}');
+          debugPrint('   - Tên: ${_user?.fullname}');
+          debugPrint('   - Email: ${_user?.email}');
+        }
+
+        if (_user == null) {
+          _isAuthenticated = false;
+          debugPrint(
+            '❌ Vẫn không có dữ liệu người dùng. Đặt lại trạng thái đăng nhập.',
+          );
+        }
       }
+    } catch (e) {
+      debugPrint('❌ Lỗi khi khởi tạo: $e');
+      _error = e.toString();
+      _isAuthenticated = false;
+    } finally {
+      _isLoading = false;
+      _isInitialized = true;
+      notifyListeners();
+      debugPrint('✅ Hoàn tất khởi tạo AuthProvider.');
     }
-
-    _isLoading = false;
-    notifyListeners();
   }
 
   // Đăng nhập
@@ -92,5 +127,65 @@ class AuthProvider extends ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  // Thêm phương thức để lấy profile người dùng
+  Future<bool> fetchUserProfile() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    debugPrint('🔄 Fetching user profile...');
+
+    try {
+      final response = await _authService.getUserProfile();
+
+      if (response.success && response.data != null) {
+        _user = response.data;
+        _error = null;
+
+        // In chi tiết thông tin user trong provider
+        debugPrint('👤 USER PROFILE RECEIVED IN PROVIDER:');
+        debugPrint('   - ID: ${_user?.id}');
+        debugPrint('   - Fullname: ${_user?.fullname}');
+        debugPrint('   - Student ID: ${_user?.studentId}');
+        debugPrint('   - Email: ${_user?.email}');
+        debugPrint('   - Department: ${_user?.department}');
+
+        // In toàn bộ thông tin user dưới dạng JSON để dễ kiểm tra
+        if (_user != null) {
+          final userMap = {
+            'id': _user!.id,
+            'fullname': _user!.fullname,
+            'studentId': _user!.studentId,
+            'email': _user!.email,
+            'phoneNumber': _user!.phoneNumber,
+            'address': _user!.address,
+            'username': _user!.username,
+            'dateOfBirth': _user!.dateOfBirth?.toIso8601String(),
+            'isActive': _user!.isActive,
+            'department': _user!.department,
+            'clazz': _user!.clazz,
+          };
+          debugPrint('📊 COMPLETE USER DATA: ${jsonEncode(userMap)}');
+        }
+
+        notifyListeners();
+        return true;
+      } else {
+        _error = response.message;
+        debugPrint('❌ Failed to fetch user profile: $_error');
+        debugPrint('❌ Status code: ${response.statusCode}');
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _error = e.toString();
+      debugPrint('❌ Error fetching user profile: $_error');
+      notifyListeners();
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }
