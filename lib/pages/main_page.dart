@@ -16,9 +16,9 @@ class _MainPageState extends State<MainPage> {
     return DefaultTabController(
       length: 3, // Số lượng tab
       child: Scaffold(
-        backgroundColor: Colors.grey[300],
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.grey[300],
+          backgroundColor: Colors.white,
           centerTitle: true,
           automaticallyImplyLeading: false,
           title: Text(

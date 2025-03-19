@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
 import 'package:app_dtn/providers/auth_provider.dart';
+
+
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -144,17 +147,18 @@ class _ProfilePageState extends State<ProfilePage>
     }
   }
 
+  bool isEditing = false; // Trạng thái chỉnh sửa
+
   @override
   Widget build(BuildContext context) {
     super.build(context); // Quan trọng cho AutomaticKeepAliveClientMixin
     _buildCount++;
     debugPrint('🏗️ BUILD: ProfilePage được xây dựng lần thứ $_buildCount');
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.grey[300],
+        backgroundColor: Colors.white,
         centerTitle: true,
-        automaticallyImplyLeading: false,
         title: Text(
           "Thông Tin Cá Nhân",
           style: TextStyle(
@@ -163,114 +167,87 @@ class _ProfilePageState extends State<ProfilePage>
           ),
         ),
         actions: [
+
+          // Nút chỉnh sửa
           IconButton(
-            icon: Icon(Icons.refresh, color: Colors.blue[900]),
+            icon: Icon(Icons.edit, color: Colors.blue[900]),
             onPressed: () {
-              debugPrint('🔄 Refresh button pressed');
-              _fetchUserProfile();
+              setState(() {
+                isEditing = !isEditing;
+              });
             },
           ),
         ],
       ),
-      body:
-          _isLoading
-              ? Center(child: CircularProgressIndicator())
-              : Consumer<AuthProvider>(
-                builder: (context, authProvider, child) {
-                  final user = authProvider.user;
-                  if (user == null) {
-                    debugPrint('❌ User is null in Consumer builder');
-                    return Center(
-                      child: Text(
-                        "Không thể tải thông tin người dùng",
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    );
-                  }
-
-                  debugPrint('✅ Displaying user data for: ${user.fullname}');
-                  return Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Form(
-                      key: _formKey,
-                      child: Container(
-                        color: Colors.grey[300],
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildReadOnlyField("Tên đầy đủ", user.fullname),
-                              _buildReadOnlyField("MSSV", user.studentId),
-                              _buildReadOnlyField("Email", user.email),
-                              _buildReadOnlyField(
-                                "Số điện thoại",
-                                user.phoneNumber,
-                              ),
-                              _buildReadOnlyField("Địa chỉ", user.address),
-                              if (user.department != null)
-                                _buildReadOnlyField("Khoa", user.department!),
-                              if (user.clazz != null)
-                                _buildReadOnlyField("Lớp", user.clazz!),
-                              if (user.dateOfBirth != null)
-                                _buildReadOnlyField(
-                                  "Ngày sinh",
-                                  "${user.dateOfBirth!.day}/${user.dateOfBirth!.month}/${user.dateOfBirth!.year}",
-                                ),
-                              SizedBox(height: 20),
-                              Center(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
-                                      // Xử lý xác nhận form
-                                      debugPrint(
-                                        '✅ Form validated successfully',
-                                      );
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue[900],
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 30,
-                                      vertical: 12,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    "Xác nhận",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(20),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Ảnh đại diện
+              Center(
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundImage: AssetImage('lib/images/thinh.png'), // Avatar
+                ),
               ),
+              SizedBox(height: 20),
+
+              // Các trường thông tin
+              _buildTextField("Tên đầy đủ", "fullname"),
+              _buildTextField("MSSV", "studentId"),
+              _buildTextField("Email", "email"),
+              _buildTextField("Số điện thoại", "phoneNumber"),
+              _buildTextField("Địa chỉ", "address"),
+              SizedBox(height: 20),
+
+              // Nút lưu khi đang chỉnh sửa
+              if (isEditing)
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save(); // Lưu dữ liệu vào user
+                      setState(() {
+                        isEditing = false;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Thông tin đã được cập nhật!")),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue[900],
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text("Lưu", style: TextStyle(fontSize: 16, color: Colors.white)),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
-  // Hàm tạo TextField chỉ đọc
-  Widget _buildReadOnlyField(String label, String value) {
-    // Debug cho mỗi field
-    debugPrint('📝 Building field: $label = $value');
+  // Hàm tạo TextField có thể chỉnh sửa
+  Widget _buildTextField(String label, String key) {
     return Padding(
       padding: EdgeInsets.only(bottom: 15),
       child: TextFormField(
-        initialValue: value,
-        readOnly: true,
+        initialValue: user[key],
+        readOnly: !isEditing, // Chỉ cho phép chỉnh sửa khi bật chế độ edit
+        onChanged: (value) {
+          user[key] = value; // Cập nhật giá trị mới vào user
+        },
         decoration: InputDecoration(
           labelText: label,
           border: OutlineInputBorder(),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: isEditing ? Colors.white : Colors.grey[300], // Chỉ đổi màu khi chỉnh sửa
         ),
       ),
     );
