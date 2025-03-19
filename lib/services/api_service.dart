@@ -86,32 +86,61 @@ class ApiService {
     http.Response response,
     T Function(dynamic)? fromJson,
   ) {
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      // Đảm bảo xử lý UTF-8 đúng cách
-      final String responseBody = utf8.decode(response.bodyBytes);
-      final jsonData = jsonDecode(responseBody);
-
-      return ApiResponse(
-        success: true,
-        message: 'Thành công',
-        data: fromJson != null ? fromJson(jsonData) : null as T?,
-        statusCode: response.statusCode,
-      );
-    } else {
-      String message;
-      try {
+    try {
+      if (response.statusCode >= 200 && response.statusCode < 300) {
         // Đảm bảo xử lý UTF-8 đúng cách
         final String responseBody = utf8.decode(response.bodyBytes);
-        final jsonData = jsonDecode(responseBody);
-        message = jsonData['message'] ?? 'Lỗi không xác định';
-      } catch (e) {
-        message = 'Lỗi: ${response.statusCode} - ${response.reasonPhrase}';
-      }
+        debugPrint('🔍 Response body: $responseBody');
 
+        final jsonData = jsonDecode(responseBody);
+        debugPrint('🔍 JSON structure type: ${jsonData.runtimeType}');
+
+        // Xử lý trường hợp từng kiểu dữ liệu, tránh lỗi ép kiểu
+        T? data;
+        if (fromJson != null) {
+          try {
+            data = fromJson(jsonData);
+          } catch (e) {
+            debugPrint('❌ Error parsing JSON with fromJson: $e');
+            return ApiResponse(
+              success: false,
+              message: 'Lỗi phân tích dữ liệu: ${e.toString()}',
+              statusCode: response.statusCode,
+            );
+          }
+        }
+
+        return ApiResponse(
+          success: true,
+          message: 'Thành công',
+          data: data,
+          statusCode: response.statusCode,
+        );
+      } else {
+        String message;
+        try {
+          // Đảm bảo xử lý UTF-8 đúng cách
+          final String responseBody = utf8.decode(response.bodyBytes);
+          debugPrint('❌ Error response body: $responseBody');
+
+          final jsonData = jsonDecode(responseBody);
+          message = jsonData['message'] ?? 'Lỗi không xác định';
+        } catch (e) {
+          message = 'Lỗi: ${response.statusCode} - ${response.reasonPhrase}';
+        }
+
+        return ApiResponse(
+          success: false,
+          message: message,
+          statusCode: response.statusCode,
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ _processResponse error: $e');
       return ApiResponse(
         success: false,
-        message: message,
-        statusCode: response.statusCode,
+        message: 'Lỗi xử lý phản hồi: ${e.toString()}',
+        statusCode: 500,
       );
     }
   }

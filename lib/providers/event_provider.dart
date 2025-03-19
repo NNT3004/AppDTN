@@ -13,6 +13,7 @@ class EventProvider extends ChangeNotifier {
   int _currentPage = 0;
   int _totalPages = 0;
   bool _hasMoreEvents = true;
+  int? _selectedEventId;
 
   // Getters
   List<Event> get events => _events;
@@ -23,6 +24,7 @@ class EventProvider extends ChangeNotifier {
   int get currentPage => _currentPage;
   int get totalPages => _totalPages;
   bool get hasMoreEvents => _hasMoreEvents;
+  int? get selectedEventId => _selectedEventId;
 
   // Lấy danh sách sự kiện
   Future<void> fetchEvents({bool refresh = false}) async {
@@ -116,12 +118,20 @@ class EventProvider extends ChangeNotifier {
       if (response.success && response.data != null) {
         _myEvents = response.data!.events;
         _error = null;
+        debugPrint(
+          '📱 EventProvider: Lấy thành công ${_myEvents.length} sự kiện của người dùng',
+        );
       } else {
         _error = response.message;
+        debugPrint(
+          '❌ EventProvider: Lỗi khi lấy sự kiện của người dùng: $_error',
+        );
       }
     } catch (e) {
       _error = e.toString();
-      debugPrint('Error fetching my events: $_error');
+      debugPrint(
+        '❌ EventProvider: Lỗi ngoại lệ khi lấy sự kiện của người dùng: $_error',
+      );
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -170,6 +180,29 @@ class EventProvider extends ChangeNotifier {
     _currentPage = 0;
     _totalPages = 0;
     _hasMoreEvents = true;
+    _error = null;
+    notifyListeners();
+  }
+
+  // Phương thức để đặt ID sự kiện được chọn
+  void setSelectedEventId(int id) {
+    _selectedEventId = id;
+    notifyListeners();
+  }
+
+  // Tách riêng phương thức đặt ID và lấy chi tiết
+  Future<void> setSelectedEventIdAndFetchDetails(int id) async {
+    _selectedEventId = id;
+    notifyListeners();
+
+    // Đưa việc lấy chi tiết vào Future để tránh gọi trong quá trình build
+    await Future.microtask(() async {
+      await fetchEventDetails(id);
+    });
+  }
+
+  // Thêm phương thức để reset lỗi
+  void resetError() {
     _error = null;
     notifyListeners();
   }

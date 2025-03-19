@@ -40,6 +40,7 @@ dependencies:
   provider:
   http: ^1.1.0  # Để gọi API HTTP
   shared_preferences: ^2.2.2  # Để lưu token
+  intl: ^0.18.1  # Thêm dòng này
 dev_dependencies:
   flutter_test:
     sdk: flutter
