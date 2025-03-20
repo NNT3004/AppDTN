@@ -163,26 +163,26 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
 
-                Padding(
-                  padding: const EdgeInsets.only(left: 25.0, right: 25.0),
-                  child: ListTile(
-                    leading: Icon(Icons.upload_file, color: Colors.blue[900]),
-                    title: Text(
-                      'Nộp minh chứng',
-                      style: TextStyle(
-                        color: Colors.blue[900],
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onTap:
-                        () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SubmitproofPage(),
-                          ),
-                        ),
-                  ),
-                ),
+                //Padding(
+                //   padding: const EdgeInsets.only(left: 25.0, right: 25.0),
+                //   child: ListTile(
+                //     leading: Icon(Icons.upload_file, color: Colors.blue[900]),
+                //     title: Text(
+                //       'Nộp minh chứng',
+                //       style: TextStyle(
+                //         color: Colors.blue[900],
+                //         fontWeight: FontWeight.bold,
+                //       ),
+                //     ),
+                //     onTap:
+                //         () => Navigator.push(
+                //           context,
+                //           MaterialPageRoute(
+                //             builder: (context) => SubmitproofPage(),
+                //           ),
+                //         ),
+                //   ),
+                // ),
               ],
             ),
 
