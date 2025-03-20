@@ -10,13 +10,13 @@ class SubmitproofPage extends StatefulWidget {
 class _SubmitproofPageState extends State<SubmitproofPage> {
   List<Map<String, String>> evidenceList = [
     {
-      "date": "2025-03-15",
+      "date": "10-03-2025",
       "points": "30",
       "source": "https://doanthanhnien.vn",
       "status": "Đang chờ duyệt"
     },
     {
-      "date": "2025-03-10",
+      "date": "10-03-2025",
       "points": "20",
       "source": "https://doanthanhnien.vn",
       "status": "Đang chờ duyệt"
@@ -39,7 +39,7 @@ class _SubmitproofPageState extends State<SubmitproofPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _buildTextField("Tên minh chứng", nameController),
-                _buildTextField("Ngày (yyyy-mm-dd)", dateController),
+                _buildTextField("Ngày (dd-mm-yyyy)", dateController),
                 _buildTextField("Link chứng từ", linkController),
                 _buildTextField("Điểm", pointsController),
               ],
